@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ireland 3D Image Slider</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh; background: linear-gradient(135deg, #cde8f7, #e7f6ff);
+  font-family: "Poppins", sans-serif; overflow: hidden; padding: 20px;
+}
+
+.slider {
+  position: relative; width: 100%; max-width: 1200px; height: 720px;
+  overflow: visible; border-radius: 25px; box-shadow: 0 40px 80px rgba(0,0,0,0.25); z-index:1;
+}
+
+.slider-bg {
+  position: absolute; top:0; left:0; width:100%; height:100%;
+  background-size: cover; background-position: center; transition: background-image 1s ease-in-out;
+  border-radius: 25px; z-index:0; filter: brightness(0.55) blur(0px);
+}
+
+.slide {
+  position: absolute; top:50%; left:50%; transform-style: preserve-3d;
+  transition: all 1s ease-in-out; overflow: hidden; border-radius:20px;
+}
+.slide img {
+  width: 280px; height: 380px; object-fit: cover; border-radius: 20px;
+  user-select:none; cursor:pointer; box-shadow:0 25px 40px rgba(0,0,0,0.3);
+}
+
+.slide[data-index="0"] { transform: translate3d(-90px, -50%, 0) rotateY(-20deg) scale(0.9); opacity:0.6; z-index:3; }
+.slide[data-index="1"] { transform: translate3d(50%, -50%, 250px) rotateY(0deg) scale(1); opacity:1; z-index:5; }
+.slide[data-index="2"] { transform: translate3d(350px, -50%, 0) rotateY(20deg) scale(0.9); opacity:0.6; z-index:3; }
+
+.text-box {
+  position:absolute; top:50%; left:60px; transform:translateY(-50%);
+  color:#fff; max-width:270px; z-index:10; animation:fadeIn 1.2s ease;
+}
+.text-box h2 { font-size:2.6em; margin-bottom:12px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+.text-box p { font-size:0.95em; margin-bottom:22px; line-height:1.6; color:rgba(255,255,255,0.9); }
+.text-box button {
+  padding:10px 22px; background:#fff; border:none; color:#333; border-radius:25px;
+  cursor:pointer; font-weight:600; transition:0.3s; box-shadow:0 5px 15px rgba(0,0,0,0.3);
+}
+.text-box button:hover { background:#0aff9d; color:#fff; transform:translateY(-2px); }
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+.controls {
+  position:absolute; bottom:25px; right:60px; display:flex; gap:15px; z-index:20;
+}
+.controls button {
+  width:40px; height:40px; border:none; border-radius:50%; background: rgba(255,255,255,0.8);
+  color:#333; font-size:1.4em; cursor:pointer; transition:0.3s; box-shadow:0 5px 10px rgba(0,0,0,0.2);
+}
+.controls button:hover { background:#0aff9d; color:#fff; transform:scale(1.1); }
+
+.indicators {
+  position:absolute; bottom:25px; left:50%; transform:translateX(-50%);
+  display:flex; gap:10px; z-index:20;
+}
+.indicator {
+  width:12px; height:12px; border-radius:50%; background: rgba(255,255,255,0.5);
+  cursor:pointer; transition:0.3s;
+}
+.indicator.active { background:#0aff9d; transform:scale(1.2); }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:1400px) { 
+  .slide img{width:260px;height:350px;} 
+  .slide[data-index="0"] { transform: translate3d(-70px, -50%, 0) rotateY(-20deg) scale(0.9); }
+  .slide[data-index="1"] { transform: translate3d(50%, -50%, 200px) rotateY(0deg) scale(1); }
+  .slide[data-index="2"] { transform: translate3d(280px, -50%, 0) rotateY(20deg) scale(0.9); }
+  .text-box{max-width:250px;}
+}
+
+@media (max-width:1200px) { 
+  .slide img{width:220px;height:300px;} 
+  .slide[data-index="0"] { transform: translate3d(-60px, -50%, 0) rotateY(-20deg) scale(0.9); }
+  .slide[data-index="1"] { transform: translate3d(50%, -50%, 180px) rotateY(0deg) scale(1); }
+  .slide[data-index="2"] { transform: translate3d(240px, -50%, 0) rotateY(20deg) scale(0.9); }
+  .text-box{max-width:220px;}
+}
+
+@media (max-width:992px) { 
+  .slide img{width:200px;height:260px;} 
+  .slide[data-index="0"] { transform: translate3d(-50px, -50%, 0) rotateY(-20deg) scale(0.9); }
+  .slide[data-index="1"] { transform: translate3d(50%, -50%, 150px) rotateY(0deg) scale(1); }
+  .slide[data-index="2"] { transform: translate3d(200px, -50%, 0) rotateY(20deg) scale(0.9); }
+  .text-box{max-width:180px;}
+}
+
+@media (max-width:700px) {
+  /* hide cards, only active card visible in JS */
+  .slide { display:none; }
+  .slide[data-index="1"] { display:block; transform: translate3d(-50%, -50%, 0) rotateY(0deg) scale(1); opacity:1; z-index:5; }
+  .slide img{width:180px;height:220px;}
+  .text-box{max-width:150px;}
+  .text-box h2{font-size:1.4em;}
+  .text-box p{font-size:0.8em;}
+}
+
+@media (max-width:420px) { 
+  .slide img{width:120px;height:160px;} 
+  .text-box h2{font-size:1.1em;} 
+  .text-box p{font-size:0.7em;} 
+}
+
+@media (max-width:312px) { 
+  .slide img{width:100px;height:140px;} 
+  .text-box h2{font-size:1em;} 
+  .text-box p{font-size:0.65em;} 
+}
+</style>
+</head>
+<body>
+<div class="slider" id="slider">
+  <div class="slider-bg" id="sliderBg"></div>
+
+  <div class="text-box">
+    <h2 id="title">Ireland</h2>
+    <p id="desc">Green lands and magical landscapes filled with history.</p>
+    
+  </div>
+
+ <div class="slide" 
+  data-title="Sydney Opera House" 
+  data-desc="An iconic masterpiece of modern architecture, beautifully set along the sparkling Sydney Harbour with a breathtaking evening skyline.">
+    <img src="images/first.webp" alt="Sydney Opera House">
+</div>
+
+<div class="slide" 
+  data-title="Santorini, Greece" 
+  data-desc="A stunning mix of blue-domed churches, whitewashed houses, and crystal-clear Aegean waters—one of the world’s most romantic destinations.">
+    <img src="images/second.jpeg" alt="Santorini Greece">
+</div>
+
+<div class="slide" 
+  data-title="Ocean Cliff Paradise" 
+  data-desc="Dramatic cliffs overlooking turquoise waters, offering peaceful landscapes and breathtaking coastal beauty—perfect for nature lovers.">
+    <img src="images/third.avif" alt="Ocean Cliff View">
+</div>
+
+  <div class="controls">
+    <button id="prev">&#10094;</button>
+    <button id="next">&#10095;</button>
+  </div>
+
+  <div class="indicators" id="indicators">
+    <div class="indicator active" data-index="0"></div>
+    <div class="indicator" data-index="1"></div>
+    <div class="indicator" data-index="2"></div>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const sliderBg = document.getElementById('sliderBg');
+const titleEl = document.getElementById("title");
+const descEl = document.getElementById("desc");
+const indicators = document.querySelectorAll('.indicator');
+const slider = document.getElementById("slider");
+
+let current = 0; // start from first slide
+let timer;
+
+function updateSlides() {
+  const windowWidth = window.innerWidth;
+
+  slides.forEach((slide, i) => {
+    const index = (i - current + slides.length) % slides.length;
+    slide.dataset.index = index;
+
+    // <700px: hide cards
+    if(windowWidth <= 700) {
+      slide.style.display = "none";
+    } else {
+      slide.style.display = "block";
+      
+    }
+  });
+
+  const activeSlide = slides[current];
+  const activeImage = activeSlide.querySelector('img').src;
+
+  sliderBg.style.backgroundImage = `url(${activeImage})`;
+  titleEl.textContent = activeSlide.dataset.title;
+  descEl.textContent = activeSlide.dataset.desc;
+
+  indicators.forEach((ind, idx) => ind.classList.toggle('active', idx === current));
+}
+
+function nextSlide() { current = (current + 1) % slides.length; updateSlides(); }
+function prevSlide() { current = (current - 1 + slides.length) % slides.length; updateSlides(); }
+
+document.getElementById("next").onclick = nextSlide;
+document.getElementById("prev").onclick = prevSlide;
+
+indicators.forEach((indicator, index) => {
+  indicator.addEventListener('click', () => { current = index; updateSlides(); });
+});
+
+slides.forEach((slide, index) => {
+  slide.addEventListener("click", () => { current = index; updateSlides(); });
+});
+
+function autoPlay() { timer = setInterval(nextSlide, 4000); }
+function stopAutoPlay() { clearInterval(timer); }
+slider.addEventListener("mouseenter", stopAutoPlay);
+slider.addEventListener("mouseleave", autoPlay);
+
+// update on resize
+window.addEventListener("resize", updateSlides);
+
+updateSlides();
+autoPlay();
+</script>
+</body>
+</html>
